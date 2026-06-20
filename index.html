@@ -33,6 +33,36 @@
         .inv-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         .inv-table th, .inv-table td { border: 1px solid #000; padding: 4px; text-align: left; }
     </style>
+
+<script>
+const partyMaster=[
+{name:"Chintamani Traders",address:"Mumbai, Maharashtra",pan:"ABAPW8023A",gst:"27ABAPW8023A1ZW"},
+{name:"F Tech. Paint Technology",address:"Ambernath, Maharashtra",pan:"AAFFF0336D",gst:"27AAFFF0336D1ZX"},
+{name:"Fitwell Packaging Industries",address:"Kolgaon, Palghar, Maharashtra",pan:"AABFF5307J",gst:"27AABFF5307J1ZJ"},
+{name:"Govind Punching",address:"Bhandup, Mumbai, Maharashtra",pan:"AQRPA3700C",gst:"27AQRPA3700C1ZC"},
+{name:"H.P. Traders",address:"Mumbai, Maharashtra",pan:"AACPB6089J",gst:"27AACPB6089J1ZK"},
+{name:"Nair Coat",address:"Kolgaon, Palghar, Maharashtra",pan:"AEEPN6682D",gst:"27AEEPN6682D1ZC"},
+{name:"Osbro Pharmaceutical (P) Ltd.",address:"Khopoli, Maharashtra",pan:"AABCO9349J",gst:"27AABCO9349J1ZY"},
+{name:"Prime Packaging",address:"Kolgaon, Palghar, Maharashtra",pan:"AALFP7550M",gst:"27AALFP7550M1ZK"},
+{name:"S.K. Enterprises",address:"Mumbai, Maharashtra",pan:"AXFPK3809H",gst:"27AXFPK3809H1Z4"},
+{name:"S.K. Packers",address:"Palghar, Maharashtra",pan:"AAQFS0500B",gst:"27AAQFS0500B1ZN"},
+{name:"Shree Kedarnath Enterprises",address:"Chinchpokali, Mumbai, Maharashtra",pan:"AYFPS4229Q",gst:"27AYFPS4229Q1ZN"},
+{name:"Shree Keteshwar General Store",address:"Palghar, Maharashtra",pan:"AEYPP9108C",gst:"27AEYPP9108C1Z1"},
+{name:"Shree Samarth Enterprises",address:"Mumbai, Maharashtra",pan:"CMFPS8385B",gst:"27CMFPS8385B1ZN"},
+{name:"Sun n Shine Enterprises",address:"Vasai, Maharashtra",pan:"BTFPP9652Q",gst:"27BTFPP9652Q1ZM"},
+{name:"Vikenn",address:"Vile Parle, Mumbai, Maharashtra",pan:"EPZPG3815F",gst:"27EPZPG3815F1Z6"},
+{name:"Wilson Medicine Company",address:"Palghar, Maharashtra",pan:"AAAFW2734R",gst:"27AAAFW2734R1ZM"},
+{name:"Ya Habeeb Hardware",address:"Hubali, Karnataka",pan:"BBZPG4497E",gst:"29BBZPG4497E1ZW"}
+];
+const productMaster=[
+{name:"Polyvinyl Acetate Emulsion (PVAE)",hsn:"39051210"},
+{name:"Paper Gum",hsn:"48114100"},
+{name:"Liquid Solution",hsn:"34011911"},
+{name:"Lamination Gum",hsn:"39052900"},
+{name:"Paper gum",hsn:"35069991"}
+];
+</script>
+
 </head>
 <body class="bg-gray-200 p-4">
 
@@ -44,8 +74,8 @@
         <div class="space-y-4">
             <div>
                 <h3 class="font-bold text-gray-700 border-b pb-1 mb-2">Party Details</h3>
-                <input type="text" id="in-party-name" placeholder="Party Name (e.g. Vikas Shinde)" class="w-full border p-2 text-sm rounded mb-2" oninput="updatePreview('in-party-name', 'out-party-name')">
-                <textarea id="in-party-address" placeholder="Party Address" class="w-full border p-2 text-sm rounded mb-2" oninput="updatePreview('in-party-address', 'out-party-address')"></textarea>
+                <input type="text" id="in-party-name" list="party-list" placeholder="Party Name" onchange="loadPartyDetails()" class="w-full border p-2 text-sm rounded mb-2" oninput="updatePreview('in-party-name', 'out-party-name')">
+                <textarea id="in-party-address" placeholder="Party Address" class="w-full border p-2 text-sm rounded mb-2" oninput="updatePreview('in-party-address', 'out-party-address')"></textarea><datalist id='party-list'></datalist>
                 <div class="flex gap-2">
                     <input type="text" id="in-party-gst" placeholder="Party GST No. (Triggers IGST if not 27)" class="w-1/2 border p-2 text-sm rounded" oninput="updatePreview('in-party-gst', 'out-party-gst'); renderItems();">
                     <input type="text" id="in-party-pan" placeholder="Party PAN No." class="w-1/2 border p-2 text-sm rounded" oninput="updatePreview('in-party-pan', 'out-party-pan')">
@@ -71,7 +101,7 @@
             <div>
                 <h3 class="font-bold text-gray-700 border-b pb-1 mb-2">Items</h3>
                 <div class="flex gap-2 mb-2">
-                    <input type="text" id="item-desc" placeholder="Description" class="w-1/2 border p-2 text-sm rounded">
+                    <input type="text" id="item-desc" list="product-list" placeholder="Description" class="w-1/2 border p-2 text-sm rounded" onchange="loadProductDetails()"><datalist id="product-list"></datalist>
                     <input type="text" id="item-hsn" placeholder="HSN" class="w-1/4 border p-2 text-sm rounded">
                 </div>
                 <div class="flex gap-2 mb-2 items-center">
@@ -206,7 +236,27 @@
 </div>
 
 <script>
-    let invoiceItems = [];
+    
+let invoiceItems = [];
+function loadPartyDetails(){
+ const s=document.getElementById('in-party-name').value;
+ const p=partyMaster.find(x=>x.name===s);
+ if(!p) return;
+ document.getElementById('in-party-address').value=p.address;
+ document.getElementById('in-party-pan').value=p.pan;
+ document.getElementById('in-party-gst').value=p.gst;
+ updatePreview('in-party-address','out-party-address');
+ updatePreview('in-party-pan','out-party-pan');
+ updatePreview('in-party-gst','out-party-gst');
+ renderItems();
+}
+function loadProductDetails(){
+ const s=document.getElementById('item-desc').value;
+ const p=productMaster.find(x=>x.name===s);
+ if(!p) return;
+ document.getElementById('item-hsn').value=p.hsn;
+}
+
 
     // Mirror text inputs to invoice
     function updatePreview(inputId, outputId) {
@@ -396,7 +446,17 @@
         html2pdf().set(opt).from(element).save();
     }
 
-    // Initialize an empty row on first load
+    
+partyMaster.forEach(p=>{
+ const o=document.createElement('option');o.value=p.name;
+ document.getElementById('party-list').appendChild(o);
+});
+productMaster.forEach(p=>{
+ const o=document.createElement('option');o.value=p.name;
+ document.getElementById('product-list').appendChild(o);
+});
+// Initialize an empty row on first load
+
     renderItems();
 </script>
 </body>
